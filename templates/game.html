@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Play!
+{% endblock %}
+{% block head %}
+{% endblock %}
+{% block main %}
+
+    
+    <form action="/game" method="post" class="needs-validation" novalidate>
+        <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="card text-white bg-warning mb-3" style="max-width: 10rem">
+              <div class="card-header">Your Number</div>
+              <div class="card-body">
+                <h2 class="card-title">{{ num }}</h2>
+              </div>
+            </div>
+        </div>
+        </div>
+            
+        <h1>I propose the number: {{ loopy }}</h1>
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="picas" placeholder="Cows" type="number" min="0" max="2" required>
+            <small class="form-text text-muted">Choose the number of digits that are in the incorrect position.</small>
+        </div>
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="fijas" placeholder="Bulls" type="number" min="0" max="2" required>
+            <small class="form-text text-muted">Choose the number of digits that are in the correct position.</small>
+        </div>
+        <h3>Propose a number: </h3>
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="proposition" placeholder="#" type="number" min="10" max="98" required>
+            <small class="form-text text-muted">Propose a two-digit number, digits should not repeat.</small>
+        </div>
+        <br></br>
+        <hr>
+        <h3>Results</h3>
+    
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Cows/Picas</th>
+            <th>Bulls/Fijas</th>
+        </tr>
+{% if score != 0 %}
+    {% for row in rows %}
+        <tr>
+            <td>{{ row.proposed_number }}</td>
+            <td>{{ row.piquillas }}</td>
+            <td>{{ row.fijillas }}</td>
+        </tr>
+    {% endfor %}
+{% endif %}
+    </table>
+        <hr>
+        <button class="btn btn-success" type="submit">Send</button>
+        <hr>
+        <br></br>
+        <h3>User´s Tools</h3>
+        
+    <div class="container">
+    <div class="row justify-content-md-center">
+        <div class="card border-info mb-3" text-center="center" style="max-width: 35rem;">
+          <div class="card-header" style="background-color:#17A2B8" id="head">Possible Digits</div>
+          <div class="card-body text-info">
+            <div role="toolbar" text-align="center" aria-label="Toolbar with button groups">
+                {% for un in range(10) %}
+                    {% if elim[un] != 1 %}
+                    <div class="btn-group mr-2" role="group" aria-label="First group">
+                        <button type="button" class="btn btn-info">{{ un }}</button>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <h5 class="card-title">Eliminate Digits:</h5>
+            <div class="form-group">
+                <input autocomplete="off" type="number" min="0" max="9" autofocus class="form-control" name="elim1" placeholder="Eliminate">
+                <small class="form-text text-muted">Insert digit to eliminate from list.</small>
+            </div>
+            <div>
+                <input autocomplete="off" type="number" min="0" max="9" autofocus class="form-control" name="elim2" placeholder="Eliminate">
+                <small class="form-text text-muted">Insert digit to eliminate from list.</small>
+            </div>
+          </div>
+        </div>
+    </div>
+    </div>
+
+    <br></br>
+    <div class="container">
+    <div class="row justify-content-md-center">   
+        <div class="card text-center text-white bg-info mb-3" text-align="center" style="max-width: 18rem;">
+              <div class="card-header">Draft</div>
+              <div class="card-body">
+                <h3 class="card-title" text-align="center">{{ tenths }} {{ ones }} </h3>
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="tenths" placeholder="Tens Place" type="number" min="0" max="9">
+                    <small class="form-text text-muted">Insert digit to place in the tens place, this number won´t affect the number you propose.</small>
+                </div>
+                <div>
+                    <input autocomplete="off" autofocus class="form-control" name="ones" placeholder="Ones Place" type="number" min="0" max="9">
+                    <small class="form-text text-muted">Insert digit to place in the ones place, this number won´t affect the number you propose.</small>
+                </div>
+              </div>
+            </div>
+            </div>
+   </form>
+   
+   <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+            }, false);
+            });
+            }, false);
+            })();
+    </script>
+
+    
+    
+{% endblock %}

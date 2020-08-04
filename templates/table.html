@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Scores
+{% endblock %}
+{% block head %}
+{% endblock %}
+{% block main %}
+    {% if machinewin == 1 %}
+        <div class="alert alert-warning" height="auto" role="alert">
+            <h4 class="alert-heading">Your number was {{ num }}!</h4>
+                <p>So you are not very good at this game... Come on! Beat me! My number was {{ machinenum }}.</p>
+            <hr>
+            {% if randomgif == 0 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/eJ4j2VnYOZU8qJU3Py" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/universalafrica-back-to-you-matthewmole-matthew-mole-eJ4j2VnYOZU8qJU3Py">via GIPHY</a></p>
+            {% elif randomgif == 1 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/l3rWrZFewa5pfVSCX4" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/memecandy-l3rWrZFewa5pfVSCX4">via GIPHY</a></p>
+            {% elif randomgif == 2 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/5n045kl6TL1Jubg6oQ" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/hyperrpg-game-happy-5n045kl6TL1Jubg6oQ">via GIPHY</a></p>
+            {% else %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/elsKiUEbLRhCMGRbTe" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/imdb-win-winning-i-elsKiUEbLRhCMGRbTe">via GIPHY</a></p>
+            {% endif %} 
+        </div>
+    {% elif userwin == 1 %}
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">Well done!</h4>
+                <p>Ok I have to admit you beated me well... Congratulations!</p>
+            <hr>
+            {% if randomgif == 0 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/3o6fJ1BM7R2EBRDnxK" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/congratulations-congrats-3o6fJ1BM7R2EBRDnxK">via GIPHY</a></p>
+            {% elif randomgif == 1 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/cOtvwSHKaFK3Ul1VVu" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/memecandy-cOtvwSHKaFK3Ul1VVu">via GIPHY</a></p>
+            {% elif randomgif == 2 %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/Qadbv0ccmSrJL9Vlwj" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/yhw-your-happy-workplace-happiness-consultant-Qadbv0ccmSrJL9Vlwj">via GIPHY</a></p>
+            {% else %}
+                <div style="width:100%;height:300;padding-bottom:3%;position:relative;"><iframe src="https://giphy.com/embed/3oFzmiMu3v4LIXpJBK" width="90%" height="auto" style="position:relative" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/congratulations-congrats-happy-for-you-3oFzmiMu3v4LIXpJBK">via GIPHY</a></p>
+            {% endif %} 
+        </div>
+    {% endif %}
+
+    {% if numrows != [{'COUNT(*)': 0}] %}
+        {% if game_id % 3 != 0 %}
+        <div class="alert alert-success" role="alert">
+           You must complete 3 rounds in order to appear in the world ranking!
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert">
+           Click the button to authorize your participation in the international competition! Your username will appear in the world ranking.
+           <a href="/appearw" class="badge badge-light">Authorize</a>
+        </div>
+        {% endif %}
+    {% endif %}
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+              <th scope="col">Number</th>
+              <th scope="col">Score</th>
+              <th scope="col">Date (GMT)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.game_id }}</td>
+                <td>{{ row.score }}</td>
+                <td>{{ row.date }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
