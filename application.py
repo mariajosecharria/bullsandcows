@@ -37,7 +37,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
+db = SQL("postgres://tkxfagxunuverk:304c45a49144e8e75cd9114132f7bc9d6bd4ace696e7bb4536d8e9eb6af1231d@ec2-54-159-138-67.compute-1.amazonaws.com:5432/dacl57e3j5cqr0")
 
 def login_required(f):
     """
@@ -55,6 +55,7 @@ def login_required(f):
 
 @app.route("/")
 def index():
+    #db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL)")
     db.execute("CREATE TABLE IF NOT EXISTS world (user NOT NULL, score NUMERIC NOT NULL)")
     return render_template("index.html")
 
@@ -238,7 +239,7 @@ def start():
         ones = '_'
         tenths = '_'
     
-        db.execute("CREATE TABLE IF NOT EXISTS game (idh INTEGER NOT NULL, proposed_number INTERGER NOT NULL, piquillas NUMERIC NOT NULL, fijillas NUMERIC NOT NULL)")
+        db.execute("CREATE TABLE IF NOT EXISTS game (idh INTEGER NOT NULL, proposed_number INTEGER NOT NULL, piquillas NUMERIC NOT NULL, fijillas NUMERIC NOT NULL)")
         define_loopy()
         db.execute("DELETE FROM game")
         return render_template("game.html", ones = ones, tenths = tenths, elim = elim, num = num, machinenum = machinenum, loopy = loopy, piquillas = piquillas, fijillas = fijillas)
