@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from functools import wraps
 import random
+import psycopg2
 
 
 # Configure application
