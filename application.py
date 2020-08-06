@@ -9,7 +9,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from functools import wraps
 import random
-import psycopg2
 
 
 # Configure application
@@ -57,7 +56,7 @@ def login_required(f):
 @app.route("/")
 def index():
     #db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL)")
-    db.execute("CREATE TABLE IF NOT EXISTS world (user NOT NULL, score NUMERIC NOT NULL)")
+    #db.execute("CREATE TABLE IF NOT EXISTS world (user TEXT NOT NULL, score NUMERIC NOT NULL)")
     return render_template("index.html")
 
     
