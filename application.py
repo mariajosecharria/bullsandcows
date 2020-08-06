@@ -37,7 +37,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("postgres://tkxfagxunuverk:304c45a49144e8e75cd9114132f7bc9d6bd4ace696e7bb4536d8e9eb6af1231d@ec2-54-159-138-67.compute-1.amazonaws.com:5432/dacl57e3j5cqr0")
+db = SQL("postgres://xiegxfawoahlfz:f18643c18a8d7be4e604cfc952881518d8095119ba46310befe6009eef79101c@ec2-34-193-232-231.compute-1.amazonaws.com:5432/defhlg16sllii3")
 
 def login_required(f):
     """
