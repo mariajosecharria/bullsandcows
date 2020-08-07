@@ -143,7 +143,10 @@ def register():
             flash("Taken username")
             return redirect("/register")
         else:
-            db.execute("INSERT INTO users (username, hash) VALUES(:username, :hash)", username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
+            numid = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
+            numid = numid[0]["count"]
+            numid += 1
+            db.execute("INSERT INTO users (id, username, hash) VALUES(:id, :username, :hash)", id = numid, username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
             return render_template("login.html")
     else:
         return render_template("register.html")
@@ -337,11 +340,12 @@ def game():
                     score = 1.5
                 score = 1.5 * score
             numrows = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
-            if numrows == [{'COUNT(*)': 0}]:
+            print(numrows)
+            if numrows == [{'count': 0}]:
                 game_id = 1
             else:
                 game_id = numrows[0]
-                game_id = game_id["COUNT(*)"]
+                game_id = game_id["count"]
                 game_id += 1
             db.execute("INSERT INTO scores (idu, game_id, score, date) VALUES(:idu, :game_id, :score, :date)", idu = session["user_id"], game_id = game_id, score = score, date = datetime.datetime.now())
             rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
@@ -356,11 +360,12 @@ def game():
                     score = 1.5
                 score = 1.5 * score
             numrows = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
-            if numrows == [{'COUNT(*)': 0}]:
+            print(numrows)
+            if numrows == [{'count': 0}]:
                 game_id = 1
             else:
                 game_id = numrows[0]
-                game_id = game_id["COUNT(*)"]
+                game_id = game_id["count"]
                 game_id += 1
             db.execute("INSERT INTO scores (idu, game_id, score, date) VALUES(:idu, :game_id, :score, :date)", idu = session["user_id"], game_id = game_id, score = score, date = datetime.datetime.now())
             rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
@@ -375,11 +380,12 @@ def game():
                     score = 1.5
                 score = 1.5 * score
             numrows = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
-            if numrows == [{'COUNT(*)': 0}]:
+            print(numrows)
+            if numrows == [{'count': 0}]:
                 game_id = 1
             else:
                 game_id = numrows[0]
-                game_id = game_id["COUNT(*)"]
+                game_id = game_id["count"]
                 game_id += 1
             db.execute("INSERT INTO scores (idu, game_id, score, date) VALUES(:idu, :game_id, :score, :date)", idu = session["user_id"], game_id = game_id, score = score, date = datetime.datetime.now())
             rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
@@ -403,9 +409,9 @@ def table():
     numrows = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
     print(numrows)
     rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
-    if numrows != [{'COUNT(*)': 0}]:
+    if numrows != [{'count': 0}]:
         dict = numrows[0]
-        game_id = int(dict["COUNT(*)"])
+        game_id = int(dict["count"])
         return render_template("table.html", numrows = numrows, rows = rows, game_id = game_id)
     else:
         flash("Play in order to see your score!")
