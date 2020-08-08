@@ -1,4 +1,4 @@
-import os
+import os, json
 
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
@@ -9,6 +9,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 from functools import wraps
 import random
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from tempfile import mkdtemp
 
 
 # Configure application
@@ -36,6 +39,12 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# database engine object from SQLAlchemy that manages connections to the database
+#engine = create_engine(os.getenv("DATABASE_URL"))
+# create a 'scoped session' that ensures different users' interactions with the
+# database are kept separate
+#db = scoped_session(sessionmaker(bind=engine))
+
 # Configure CS50 Library to use SQLite database
 db = SQL("postgres://xiegxfawoahlfz:f18643c18a8d7be4e604cfc952881518d8095119ba46310befe6009eef79101c@ec2-34-193-232-231.compute-1.amazonaws.com:5432/defhlg16sllii3")
 
@@ -55,6 +64,9 @@ def login_required(f):
 
 @app.route("/")
 def index():
+    #db.execute("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES TO PUBLIC;")
+    row = db.execute("SELECT table_catalog, table_schema FROM information_schema.tables WHERE table_name = 'users'")
+    print(row)
     #db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL)")
     #db.execute("CREATE TABLE IF NOT EXISTS world (user TEXT NOT NULL, score NUMERIC NOT NULL)")
     return render_template("index.html")
@@ -73,10 +85,12 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
+        #db.execute("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES TO PUBLIC;")
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = :username",
                           username=request.form.get("username"))
+        print(rows)
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
@@ -87,6 +101,9 @@ def login():
         session["user_id"] = rows[0]["id"]
         
         db.execute("CREATE TABLE IF NOT EXISTS scores (idu INTEGER NOT NULL, game_id INTEGER NOT NULL, score NUMERIC NOT NULL, date DATE NOT NULL)")
+        #name = db.execute("SELECT username FROM users WHERE id = :id", id = session["user_id"])
+        #name = name[0]['username']
+        #db.execute("GRANT SELECT, INSERT, CREATE, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO :username", username = name)
 
         # Redirect user to home page
         return render_template("start.html")
@@ -136,17 +153,17 @@ def register():
             
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username", username=request.form.get("username"))
+        rows = db.execute("SELECT * FROM users WHERE username = :username;", username=request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) == 1:
             flash("Taken username")
             return redirect("/register")
         else:
-            numid = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
+            numid = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu;", idu = session['user_id'])
             numid = numid[0]["count"]
             numid += 1
-            db.execute("INSERT INTO users (id, username, hash) VALUES(:id, :username, :hash)", id = numid, username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
+            db.execute("INSERT INTO users (id, username, hash) VALUES(:id, :username, :hash);", id = numid, username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
             return render_template("login.html")
     else:
         return render_template("register.html")
@@ -242,9 +259,12 @@ def start():
         ones = '_'
         tenths = '_'
     
-        db.execute("CREATE TABLE IF NOT EXISTS game (idh INTEGER NOT NULL, proposed_number INTEGER NOT NULL, piquillas NUMERIC NOT NULL, fijillas NUMERIC NOT NULL)")
+        db.execute("CREATE TABLE IF NOT EXISTS game (idh INTEGER NOT NULL, proposed_number INTEGER NOT NULL, piquillas NUMERIC NOT NULL, fijillas NUMERIC NOT NULL);")
+        
         define_loopy()
-        db.execute("DELETE FROM game")
+        db.execute("DELETE FROM game;")
+        rows = db.execute("SELECT proposed_number FROM game")
+        print(rows)
         return render_template("game.html", ones = ones, tenths = tenths, elim = elim, num = num, machinenum = machinenum, loopy = loopy, piquillas = piquillas, fijillas = fijillas)
         
 @app.route("/game", methods=["GET", "POST"])
@@ -348,6 +368,7 @@ def game():
                 game_id = game_id["count"]
                 game_id += 1
             db.execute("INSERT INTO scores (idu, game_id, score, date) VALUES(:idu, :game_id, :score, :date)", idu = session["user_id"], game_id = game_id, score = score, date = datetime.datetime.now())
+            
             rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
             return render_template("table.html", numrows = numrows, game_id = game_id, rows = rows, randomgif = randomgif, machinewin = machinewin, userwin = userwin, num = num, machinenum = machinenum)
         
@@ -368,6 +389,7 @@ def game():
                 game_id = game_id["count"]
                 game_id += 1
             db.execute("INSERT INTO scores (idu, game_id, score, date) VALUES(:idu, :game_id, :score, :date)", idu = session["user_id"], game_id = game_id, score = score, date = datetime.datetime.now())
+            
             rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
             return render_template("table.html", numrows = numrows, game_id = game_id, rows = rows, randomgif = randomgif, machinewin = machinewin, userwin = userwin, num = num, machinenum = machinenum)
         
@@ -393,7 +415,7 @@ def game():
         score += 1  
         db.execute("INSERT INTO game (idh, proposed_number, piquillas, fijillas) VALUES (:idh, :proposed_number, :piquillas, :fijillas)", idh = session["user_id"], proposed_number = proposed_number, piquillas = piquillas, fijillas = fijillas) 
         rows = db.execute("SELECT proposed_number, piquillas, fijillas FROM game WHERE idh = :idh", idh = session["user_id"])
-        
+        print(rows)
         return render_template("game.html", ones = ones, tenths = tenths, elim = elim, rows = rows, score = score, machinenum = machinenum, loopy = loopy, proposed_number = proposed_number, num = num, piquillas = piquillas, fijillas = fijillas)
     
 
