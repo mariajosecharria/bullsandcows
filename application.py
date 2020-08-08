@@ -160,8 +160,10 @@ def register():
             flash("Taken username")
             return redirect("/register")
         else:
-            numid = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu;", idu = session['user_id'])
+            numid = db.execute("SELECT COUNT(*) FROM users")
+            print(numid)
             numid = numid[0]["count"]
+            print(numid)
             numid += 1
             db.execute("INSERT INTO users (id, username, hash) VALUES(:id, :username, :hash);", id = numid, username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
             return render_template("login.html")
