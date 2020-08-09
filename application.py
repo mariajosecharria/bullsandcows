@@ -168,6 +168,8 @@ def register():
             db.execute("BEGIN;")
             db.execute("INSERT INTO users (id, username, hash) VALUES(:id, :username, :hash);", id = numid, username = request.form.get("username"), hash = generate_password_hash(request.form.get("password")))
             db.execute("COMMIT;")
+            rows = db.execute("SELECT username FROM users")
+            print(rows)
             return render_template("login.html")
     else:
         return render_template("register.html")
