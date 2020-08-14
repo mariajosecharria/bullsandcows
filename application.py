@@ -24,7 +24,7 @@ elim = [0] * 10
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-# Ensure responses aren't cached
+# Ensure responses aren't cached, obtained from cs50 finance
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -33,7 +33,7 @@ def after_request(response):
     return response
 
 
-# Configure session to use filesystem (instead of signed cookies)
+# Configure session to use filesystem (instead of signed cookies), obtained from cs50 finance
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -50,7 +50,7 @@ db = SQL("postgres://xiegxfawoahlfz:f18643c18a8d7be4e604cfc952881518d8095119ba46
 
 def login_required(f):
     """
-    Decorate routes to require login.
+    Decorate routes to require login, obtained from cs50 finance
 
     http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
     """
@@ -64,9 +64,8 @@ def login_required(f):
 
 @app.route("/")
 def index():
-    #db.execute("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES TO PUBLIC;")
-    row = db.execute("SELECT table_catalog, table_schema FROM information_schema.tables WHERE table_name = 'users'")
-    print(row)
+    #row = db.execute("SELECT table_catalog, table_schema FROM information_schema.tables WHERE table_name = 'users'")
+    #print(row)
     #db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL)")
     #db.execute("CREATE TABLE IF NOT EXISTS world (user TEXT NOT NULL, score NUMERIC NOT NULL)")
     return render_template("index.html")
