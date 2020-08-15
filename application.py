@@ -436,13 +436,13 @@ def table():
     numrows = db.execute("SELECT COUNT(*) FROM scores WHERE idu = :idu", idu = session["user_id"])
     print(numrows)
     rows = db.execute("SELECT game_id, score, date FROM scores WHERE idu = :idu ORDER BY game_id DESC", idu = session["user_id"])
+    dict = numrows[0]
+    game_id = int(dict["count"])
     if numrows != [{'count': 0}]:
-        dict = numrows[0]
-        game_id = int(dict["count"])
         return render_template("table.html", numrows = numrows, rows = rows, game_id = game_id)
     else:
         flash("Play in order to see your score!")
-        return render_template("table.html", numrows = numrows, rows = rows)
+        return render_template("table.html", numrows = numrows, rows = rows, game_id = game_id)
     
 @app.route("/ranking")
 def ranking():
